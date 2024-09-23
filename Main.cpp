@@ -1,6 +1,10 @@
 #include "CPU.h"
+#include <iostream>
 
 
 int main() {
-    cout << "This is a test";
+    std::cout << "This, is a test, nothing more.";
+    CPU cpu = CPU();
+    cpu.writeToFile();
+    return 0;
 }
