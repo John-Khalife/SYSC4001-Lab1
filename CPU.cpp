@@ -1,34 +1,52 @@
-#include <iostream>
+/**
+ * This is the deffinition file for the methods belonging to the CPU class.
+ * @date September 30th, 2024
+ * @author John Khalife, Stavros Karamalis
+*/
+
 #include "CPU.h"
+#include <iostream>
 #include <fstream>
 
+
 void CPU::writeExecutionStep(int duration, std::string eventType) {
-    ofstream file; //file stream object
+    std::ofstream file; //file stream object
     file.open("execution.txt", std::ios::app); //open execution file in append mode
-    file << clock << ", " << duration << ", " << eventType << std::endl; // Write the execution message in the proper format
+    file << time << ", " << duration << ", " << eventType << std::endl; // Write the execution message in the proper format
     file.close(); //Close the file
+    time += duration; //Add the amount of time to CPU time for the next write
 }
 
 void CPU::systemCall(int duration, int isrAddress) {
     //First switch to kernel mode
     switchCPUMode();
-
-    //Save context
+    
+    using namespace std;
+    int contextSaveDuration = (rand() % 10) + 1;
+    writeExecutionStep(contextSaveDuration,"Context saved."); //Save context
 
     //Check vector table and call ISR
     ifstream file;
-    std::string text;
+    string text;
+    
+    writeExecutionStep(1,"Find vector " + std::to_string(isrAddress) + "in memory position " + integerToHexString(isrAddress) + ".");
     file.open("VectorTable.txt");
     for (int i = 0 ; i <= isrAddress ; i++) {
         getline(file,text);
     }
     file.close(); // Now the text string should contain the ISR.
-
+    writeExecutionStep(1, "Load address " + text + " into the PC."); //output the address being loaded
+    
     //Call the device driver
-    //TODO: Determine what should be put in the vector table - so that we know what function to call.
+    writeExecutionStep(duration - 5, "SYSCALL: Execute ISR.");
 
     //Prolly should switch back
     switchCPUMode();
+    writeExecutionStep(1,"Transfer data."); //transfer data - //TODO: also a random time that sums to the duration with syscall
+    writeExecutionStep(1,"Check for errors."); // Error check - //TODO: random time again - that sums to the duration with syscall!
+    writeExecutionStep(1,"IRET"); // Interrupt return.
+    // check for errors
+
 }
 
 void CPU::switchCPUMode() {
@@ -44,6 +62,13 @@ void CPU::switchCPUMode() {
 bool CPU::isKernelMode() {
     return kernelMode;
 }
+
+std::string CPU::integerToHexString(int number) {
+    char hexValue[6]; //TODO: make global const?
+    snprintf(hexValue, 6, "%X", number); 
+    return hexValue;
+}
+
 
 
 
