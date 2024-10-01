@@ -7,6 +7,7 @@
 #include "CPU.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <random>
 #include <sstream>
 
