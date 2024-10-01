@@ -19,7 +19,9 @@ int main() {
     test.close();
 
     cpu.writeExecutionStep(50,"Initialize variables");
-    cpu.writeExecutionStep(70,"This is a test of a second instruction - does it append?");
+    cpu.execution(30);
     cpu.systemCall(10,1);
+    cpu.execution(45);
+    cpu.interrupt(238,26);
     return 0;
 }
