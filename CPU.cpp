@@ -7,14 +7,15 @@
 #include "CPU.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 
 
 void CPU::writeExecutionStep(int duration, std::string eventType) {
     std::ofstream file; //file stream object
     file.open("execution.txt", std::ios::app); //open execution file in append mode
-    file << time << ", " << duration << ", " << eventType << std::endl; // Write the execution message in the proper format
+    file << eventType << std::endl; // Write the execution message in the proper format
     file.close(); //Close the file
-    time += duration; //Add the amount of time to CPU time for the next write
+    //time += duration; //Add the amount of time to CPU time for the next write
 }
 
 void CPU::systemCall(int duration, int isrAddress) {
