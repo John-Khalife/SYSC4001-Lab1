@@ -11,6 +11,7 @@
 //dependencies
 #include <iostream>
 #include <fstream>
+#include "Parsing.h"
 
 class CPU {
 
@@ -18,37 +19,6 @@ class CPU {
 
         //Member variables
         int timer; //used to keep track of timer
-    
-    public: //TODO: Only the execute instruction method needs to be public
-
-        /**
-        * Constructor of the CPU class.
-        */
-        CPU() {
-            timer = 0;
-        }
-        
-        /**
-         * Method used to write CPU events to the output file
-         * @param duration - An integer stating the timer taken for the CPU to complete the action
-         * @param eventType - A string dictating the action of the CPU
-         * 
-        */
-        void writeExecutionStep(int duration, std::string eventType);
-
-        /**
-         * This method is intended to be used for a system call - it checks the input device.
-         * @param duration - An integer stating the timer taken for the CPU to complete the action
-         * @param isrAddress - An integer stating the memory address in the vector table for the ISR.
-        */
-        void systemCall(int duration, int isrAddress);
-
-        /**
-         * This method is intended to be used to convert an integer to a hexidecimal string.
-         * @param number - an integer that is the value needed to be converted.
-         * @return the string containing a hexadecimal value
-        */
-        std::string integerToHexString(int number);
 
         /**
          * This method represents the CPU instruction that can be given from the trace.
@@ -70,10 +40,34 @@ class CPU {
        void accessVectorTable(int isrAddress);
 
         /**
+         * Method used to write CPU events to the output file
+         * @param duration - An integer stating the timer taken for the CPU to complete the action
+         * @param eventType - A string dictating the action of the CPU
+         * 
+        */
+        void writeExecutionStep(int duration, std::string eventType);
+
+        /**
+         * This method is intended to be used for a system call - it checks the input device.
+         * @param duration - An integer stating the timer taken for the CPU to complete the action
+         * @param isrAddress - An integer stating the memory address in the vector table for the ISR.
+        */
+        void systemCall(int duration, int isrAddress);
+    
+    public:
+
+        /**
+        * Constructor of the CPU class.
+        */
+        CPU() {
+            timer = 0;
+        }
+
+        /**
          * This method is used to call the appropriate function based on the instrcution given.
          * @param instruction - a instr struct that contains the command and any parameters it may have
         */
-       //executeInstruction(instr instruction)
+       void executeInstruction(parsing::instr* instruction);
 
 };
 

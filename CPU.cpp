@@ -4,15 +4,15 @@
  * @author John Khalife, Stavros Karamalis
 */
 
-#include "CPU.h"
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <random>
 #include <sstream>
+#include <string>
+#include "CPU.h"
+#include "Parsing.h"
 
 
-//TODO: move to the parsing namespace + rename the namespace
 void CPU::writeExecutionStep(int duration, std::string eventType) {
     std::ofstream file; //file stream object
     file.open("execution.txt", std::ios::app); //open execution file in append mode
@@ -65,7 +65,7 @@ void CPU::accessVectorTable(int isrAddress) {
     ifstream file;
     string text;
     
-    writeExecutionStep(1,"Find vector " + std::to_string(isrAddress) + " in memory position " + integerToHexString(isrAddress) + ".");
+    writeExecutionStep(1,"Find vector " + std::to_string(isrAddress) + " in memory position " + parsing::integerToHexString(isrAddress) + ".");
     file.open("VectorTable.txt");
     for (int i = 0 ; i <= isrAddress ; i++) {
         getline(file,text);
@@ -74,20 +74,13 @@ void CPU::accessVectorTable(int isrAddress) {
     writeExecutionStep(1, "Load address " + text + " into the PC."); //output the address being loaded
 }
 
-//This method can be defined when parsing is finisehd
-/**
- * void executeInstruction(instr instruction) {
- *   case statement goes here or smth
- * }
-*/
 
-//TODO: move to the parsing namespace + rename the namespace
-std::string CPU::integerToHexString(int number) {
-    std::stringstream ss;
-    ss << std::setfill('0') << std::setw(4) << std::hex << number;
-    return "0x" + ss.str();
+void CPU::executeInstruction(parsing::instr* instruction) {
+    if (!parsing::orders::CPU.compare(instruction->argName)) {
+        executeCPU(instruction->args[0]);
+    } else if (!parsing::orders::SYSCALL.compare(instruction->argName)) {
+        systemCall(instruction->args[1],instruction->args[0]);
+    } else if (!parsing::orders::CPU.compare(instruction->argName)) {
+        interrupt(instruction->args[1],instruction->args[0]);
+    }
 }
-
-
-
-
