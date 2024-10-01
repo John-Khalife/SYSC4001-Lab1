@@ -58,7 +58,6 @@ void CPU::accessVectorTable(int isrAddress) {
     writeExecutionStep(1,"Switch CPU to Kernel mode.");
     
     using namespace std;
-    cout << contextSaveTimeDistribution(generator) << std::endl;
     writeExecutionStep(contextSaveTimeDistribution(generator),"Context saved."); //Save context
 
     //Check vector table and call ISR
@@ -80,7 +79,7 @@ void CPU::executeInstruction(parsing::instr* instruction) {
         executeCPU(instruction->args[0]);
     } else if (!parsing::orders::SYSCALL.compare(instruction->argName)) {
         systemCall(instruction->args[1],instruction->args[0]);
-    } else if (!parsing::orders::CPU.compare(instruction->argName)) {
+    } else if (!parsing::orders::END_IO.compare(instruction->argName)) {
         interrupt(instruction->args[1],instruction->args[0]);
     }
 }

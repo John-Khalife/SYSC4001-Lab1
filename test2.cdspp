@@ -7,7 +7,7 @@ int main() {
     std::cout << "This, is a test, nothing more." << std::endl;
     std::ifstream test;
     CPU cpu = CPU();
-    test.open("trace1.txt");
+    test.open("trace2.txt");
     while(test.is_open()){
         parsing::instr* operation = parsing::readFromTrace(&test);
         cpu.executeInstruction(operation);
