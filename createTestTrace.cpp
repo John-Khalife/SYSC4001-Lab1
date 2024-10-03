@@ -10,17 +10,24 @@
 #include <fstream>
 #include <time.h>
 
-namespace instructions {
-        using namespace std;
-        const string CPU = "CPU";
-        const string SYSCALL = "SYSCALL";
-        const string END_IO = "END_IO";
+
+// If ever a new instruction needs to be added - add the equivalent string here
+namespace orders {
+    using namespace std;
+    const string CPU = "CPU";
+    const string SYSCALL = "SYSCALL";
+    const string END_IO = "END_IO";
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
-    int numTraces = 20; //Represents how many trace files we want to make.
-    int loopNum; //Represents how many instructions each trace file will have.
+    if (argc > 3) {
+        std::cout << "There are too many parameters." << std::endl;
+        return 1;
+    }
+
+    int numTraces = atoi(argv[1]); //Represents how many trace files we want to make.
+    int loopNum = atoi(argv[2]); //Represents how many instructions each trace file will have.
     int j; //Keeps track of which type of instruction should come next in the trace file.
 
     std::string nameFile;
@@ -38,22 +45,22 @@ int main(){
 
         for(j = 0; j < loopNum; j++) //Writes the instructions in the trace file
         {
-            outfile << instructions::CPU << ", " << rand() % 100 << std::endl;
+            outfile << orders::CPU << ", " << rand() % 100 << std::endl;
 
             if (j == 2){
-                outfile << instructions::SYSCALL << " " << rand() % 27 << ", " << 100 + (rand() % 301)<< std::endl;
+                outfile << orders::SYSCALL << " " << rand() % 27 << ", " << 100 + (rand() % 301)<< std::endl;
             }
             else if (j == 1){
-                outfile << instructions::END_IO << " " << rand() % 27 << ", " << 100 + (rand() % 301)<< std::endl;
+                outfile << orders::END_IO << " " << rand() % 27 << ", " << 100 + (rand() % 301)<< std::endl;
             }
         }
 
         if (j % 2 != 0)
         {
-            outfile << instructions::END_IO << " " << rand() % 27 << ", " << 100 + (rand() % 301)<< std::endl;
+            outfile << orders::END_IO << " " << rand() % 27 << ", " << 100 + (rand() % 301)<< std::endl;
         }
         
-        outfile << instructions::CPU << ", " << rand() % 100 << std::endl; //Last instruction
+        outfile << orders::CPU << ", " << rand() % 100 << std::endl; //Last instruction
 
         outfile.close(); //Closes the trace file.
     }
