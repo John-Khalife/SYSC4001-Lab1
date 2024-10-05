@@ -76,7 +76,7 @@ namespace execution {
     }
 
     void interrupt(std::ofstream* output, int duration, int isrAddress) {
-        writeExecutionStep(output ,1,"Check the priority of interrupt.");
+        writeExecutionStep(output ,1,"Check priority of interrupt.");
         writeExecutionStep(output,1,"Check if interrupt is masked.");
         accessVectorTable(output,isrAddress);
         writeExecutionStep(output,duration,"END_IO"); 
@@ -120,15 +120,21 @@ namespace execution {
 
 int main(int argc, char* argv[]) {
     //Check to make sure there are arguments
-    if (argc > 3) {
-        std::cout << "Improper argument number";
+    if (argc <= 1 || argc > 2) {
+        std::cout << "Improper argument number." << std::endl;
         return 1;
     }
 
-    std::ifstream input;
+    //Get the file number in the title of trace (if it is there)
+    std::string fileNum = ((std::string) argv[1]).substr(((std::string) argv[1]).size() - 5,1); //Grab the value before .txt
     std::ofstream output;
-    output.open(argv[2]);
-    input.open(argv[1]);
+    //Create input and output file objects
+    if (isdigit(fileNum[0])) { //If the value is anumber, add it to the end of execution.
+        output.open("execution" + fileNum + ".txt");
+    } else {
+        output.open("execution.txt"); //otherwise just open execution.txt as the output file.
+    }
+    std::ifstream input(argv[1]);
         while(input.is_open()){
             parsing::instr* operation = parsing::readFromTrace(&input);
             execution::executeInstruction(&output,operation);
