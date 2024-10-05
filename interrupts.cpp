@@ -76,7 +76,7 @@ namespace execution {
     }
 
     void interrupt(std::ofstream* output, int duration, int isrAddress) {
-        writeExecutionStep(output ,1,"Check the priority of interrupt.");
+        writeExecutionStep(output ,1,"Check priority of interrupt.");
         writeExecutionStep(output,1,"Check if interrupt is masked.");
         accessVectorTable(output,isrAddress);
         writeExecutionStep(output,duration,"END_IO"); 
@@ -120,8 +120,8 @@ namespace execution {
 
 int main(int argc, char* argv[]) {
     //Check to make sure there are arguments
-    if (argc > 2) {
-        std::cout << "Improper argument number";
+    if (argc <= 1 || argc > 2) {
+        std::cout << "Improper argument number." << std::endl;
         return 1;
     }
 

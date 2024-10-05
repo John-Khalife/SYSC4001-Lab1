@@ -14,8 +14,8 @@
 
 int main(int argc, char* argv[]){
 
-    if (argc > 3) {
-        std::cout << "There are too many parameters." << std::endl;
+    if (argc <= 1 || argc > 3) {
+        std::cout << "There are too many or too few arguments." << std::endl;
         return 1;
     }
 
