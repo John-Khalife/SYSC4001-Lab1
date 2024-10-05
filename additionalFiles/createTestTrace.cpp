@@ -34,11 +34,12 @@ int main(int argc, char* argv[]){
         nameFile = "testTrace" + std::to_string(i) + ".txt"; //Creates a new file name for each trace file.
         std::ofstream outfile (nameFile); //Creates a new empty file for our trace.
         
-        loopNum = traceLineDistribution(generator); //Randomizes how many instructions will be in this trace file.
+        int lineNum = traceLineDistribution(generator); //Randomizes how many instructions will be in this trace file.
 
-        for(int j = 0; j < loopNum; j++) //Writes the instructions in the trace file
+        for(int j = 0; j < lineNum/2; j++) //Writes the instructions in the trace file
         {
             outfile << parsing::orders::CPU << ", " << cpuDurationDistribution(generator) << std::endl;
+            
 
             if (j % 2 == 1){
                 outfile << parsing::orders::END_IO << " " << vectorTableDistribution(generator) << ", " << interruptDurationDistribution(generator) << std::endl;

@@ -283,10 +283,10 @@ bool checkInterrupt(std::ifstream *output, instr *operation, int (&ratio)[3], in
     Output line = parseExecution(output);
 
     // Verify the string that was outputed
-    if (line.message.compare(" Check the priority of interrupt."))
+    if (line.message.compare(" Check priority of interrupt."))
     {
         std::cout << "Error: END_IO command output is faulty: " << line.message << std::endl;
-        std::cout << operation->argName;
+
         return false;
     }
     if (line.duration != 1)
@@ -361,57 +361,64 @@ bool checkInterrupt(std::ifstream *output, instr *operation, int (&ratio)[3], in
 int main(int argc, char *argv[])
 {
     // Check to make sure there is one argument
-    if (argc <= 1 || argc > 2)
+    if (argc <= 1 || argc > 3)
     {
         std::cout << "Too many or too few arguments" << std::endl;
         return 1;
     }
 
     // Get the file number in the title of trace (if it is there)
-    std::string fileNum = ((std::string)argv[1]).substr(((std::string)argv[1]).size() - 5, 1); // Grab the value before .txt
     // Create input and output file objects
-    std::ifstream output;
-    if (isdigit(fileNum[0]))
-    { // If the value is anumber, add it to the end of execution.
-        //std::cout<< "filename is: " << "execution" + fileNum + ".txt" << std::endl;
-        output.open("execution" + fileNum + ".txt");
-    }
-    else
-    {
-        output.open("execution.txt"); // otherwise just open execution.txt as the output file.
-    }
-    int line = 0;
-    std::ifstream input(argv[1]);
+    
+    int traceNum = atoi(argv[2]);
+    int startFileNum = atoi(argv[1]);
+
     int ratio[3] = {0,0,0};
-    int totalTime[3] = {0,0,0};;
-    while (input.is_open())
-    {
-        instr *operation = readFromTrace(&input);
-        bool properOutput;
-        // Check the right instruction based off of this
-        if (!orders::CPU.compare(operation->argName))
+    int totalTime[3] = {0,0,0};
+    for (int i = 0 ; i < traceNum ; i++) {
+        std::ifstream output("execution" + std::to_string(startFileNum) + ".txt");
+        std::ifstream input("testTrace" + std::to_string(startFileNum)  + ".txt");
+        std::cout<< "Input: " << "testTrace" + std::to_string(startFileNum)  + ".txt" << " Output: " << "execution" + std::to_string(startFileNum) + ".txt" << std::endl;
+        startFileNum++;
+        int line = 0;
+        int tempRatio[3] = {0,0,0};
+        int tempTotalTime[3] = {0,0,0};;
+        while (input.is_open())
         {
-            properOutput = checkExecuteCPU(&output, operation, ratio, totalTime);
+            instr *operation = readFromTrace(&input);
+            bool properOutput;
+            // Check the right instruction based off of this
+            if (!orders::CPU.compare(operation->argName))
+            {
+                properOutput = checkExecuteCPU(&output, operation, tempRatio, tempTotalTime);
+            }
+            else if (!orders::SYSCALL.compare(operation->argName))
+            {
+                properOutput = checkSystemCall(&output, operation, tempRatio, tempTotalTime);
+            }
+            else if (!orders::END_IO.compare(operation->argName))
+            {
+                properOutput = checkInterrupt(&output, operation, tempRatio, tempTotalTime);
+            }
+            if (!properOutput)
+            {
+                std::cout << "The tests have failed due to a failed " << operation->argName << " instruction on line " << line << "." << std::endl;
+                std::cout << "Parameters: " << operation->args[0] << ", " << operation->args[1] << std::endl;
+                return 1;
+            }
+            line = line + 1;
         }
-        else if (!orders::SYSCALL.compare(operation->argName))
-        {
-            properOutput = checkSystemCall(&output, operation, ratio, totalTime);
+        std::cout << "Ratio - CPU: " << tempRatio[0] << ", I/O: " << tempRatio[1] << ", Overhead: " << tempRatio[2] << "." << std::endl;
+        std::cout << "Time - CPU: " << tempTotalTime[0] << ", I/O: " << tempTotalTime[1] << ", Overhead: " << tempTotalTime[2] << "." << std::endl;
+        for (int j = 0 ; j < 3 ;j++) {
+            ratio[j] += tempRatio[j];
+            totalTime[j] += tempTotalTime[j];
         }
-        else if (!orders::END_IO.compare(operation->argName))
-        {
-            properOutput = checkInterrupt(&output, operation, ratio, totalTime);
-        }
-        if (!properOutput)
-        {
-            std::cout << "The tests have failed due to a failed " << operation->argName << " instruction on line " << line << "." << std::endl;
-            std::cout << "Parameters: " << operation->args[0] << ", " << operation->args[1] << std::endl;
-            return 1;
-        } else {
-            std::cout << "The test of line " << line << " has passed." << std::endl;
-        }
-        line = line + 1;
+        output.close();
+        input.close();
     }
 
+    std::cout << "Overall Stats:" << std::endl;
     std::cout << "Ratio - CPU: " << ratio[0] << ", I/O: " << ratio[1] << ", Overhead: " << ratio[2] << "." << std::endl;
     std::cout << "Time - CPU: " << totalTime[0] << ", I/O: " << totalTime[1] << ", Overhead: " << totalTime[2] << "." << std::endl;
 

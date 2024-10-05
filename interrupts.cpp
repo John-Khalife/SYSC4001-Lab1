@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
     }
 
     //Get the file number in the title of trace (if it is there)
-    std::string fileNum = ((std::string) argv[1]).substr(((std::string) argv[1]).size() - 5,1); //Grab the value before .txt
+    std::string fileNum = ((std::string) argv[1]).substr(((std::string) argv[1]).find_first_of("0123456789"),((std::string) argv[1]).find_last_of("0123456789") - ((std::string) argv[1]).find_first_of("0123456789") + 1); //Grab the value before .txt
     std::ofstream output;
     //Create input and output file objects
     if (isdigit(fileNum[0])) { //If the value is anumber, add it to the end of execution.
